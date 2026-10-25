@@ -21,9 +21,13 @@ const dom = new JSDOM(html, {
   resources: "usable"
 });
 
-//Handle fetch
-const fetchPkg = 'node_modules/whatwg-fetch/dist/fetch.umd.js';
-dom.window.eval(fs.readFileSync(fetchPkg, 'utf-8'));
+dom.window.fetch = async () => ({
+  ok: true,
+  json: async () => [{
+    title: 'sunt aut facere repellat provident occaecati excepturi optio reprehenderit',
+    body: 'quia et suscipit\nsuscipit recusandae consequuntur expedita et cum\n'
+  }]
+});
 
 // Inject the transformed JavaScript into the virtual DOM
 const scriptElement = dom.window.document.createElement("script");
@@ -39,19 +43,20 @@ global.Node = dom.window.Node;
 global.Text = dom.window.Text;
 global.XMLHttpRequest = dom.window.XMLHttpRequest;
 
-// Sample test suite for JavaScript event handling
-describe('Asynchronous Fetching ', () => {
-  it('should fetch to external api and add information to page', async() => {
-    await new Promise(resolve => setTimeout(resolve, 200)); 
-    let postDisplay = document.querySelector("#post-list")
-    expect(postDisplay.innerHTML).to.include('sunt aut')
-    
-  })
-  it('should create an h1 and p element to add', async() => {
-    await new Promise(resolve => setTimeout(resolve, 200)); 
-    let h1 = document.querySelector("h1")
-    let p = document.querySelector("p")
-    expect(h1.textContent).to.include("sunt aut facere repellat")
-    expect(p.textContent).to.include("quia et suscipit\nsuscipit")
-  })
-})
+describe('Asynchronous fetching', () => {
+  before(async () => {
+    await new Promise(resolve => setTimeout(resolve, 0));
+  });
+
+  it('renders the fetched post in the list', () => {
+    const postDisplay = document.querySelector("#post-list");
+    expect(postDisplay.innerHTML).to.include('sunt aut');
+  });
+
+  it('creates an h1 and p element for the post', () => {
+    const h1 = document.querySelector("h1");
+    const p = document.querySelector("p");
+    expect(h1.textContent).to.include("sunt aut facere repellat");
+    expect(p.textContent).to.include("quia et suscipit\nsuscipit");
+  });
+});

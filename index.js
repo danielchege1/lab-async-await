@@ -1,49 +1,46 @@
 function displayPosts(posts) {
-const postList = document.getElementById("post-list");
+    const postList = document.getElementById("post-list");
 
-```
-postList.innerHTML = "";
+    postList.innerHTML = "";
 
-for (const post of posts) {
-    const li = document.createElement("li");
+    for (const post of posts) {
+        const li = document.createElement("li");
 
-    const h1 = document.createElement("h1");
-    h1.textContent = post.title;
+        const h1 = document.createElement("h1");
+        h1.textContent = post.title;
 
-    const p = document.createElement("p");
-    p.textContent = post.body;
+        const p = document.createElement("p");
+        p.textContent = post.body;
 
-    li.appendChild(h1);
-    li.appendChild(p);
+        li.appendChild(h1);
+        li.appendChild(p);
 
-    postList.appendChild(li);
-}
-```
-
+        postList.appendChild(li);
+    }
 }
 
 async function fetchPosts() {
-try {
-const response = await fetch(
-"https://jsonplaceholder.typicode.com/posts"
-);
+    const response = await fetch(
+        "https://jsonplaceholder.typicode.com/posts"
+    );
 
-```
     if (!response.ok) {
         throw new Error(`HTTP error: ${response.status}`);
     }
 
     const posts = await response.json();
-
     displayPosts(posts);
 
     return posts;
-} catch (error) {
+}
+
+fetchPosts().catch((error) => {
     console.error("Error fetching posts:", error);
-    throw error;
-}
-```
 
-}
-
-fetchPosts();
+    const postList = document.getElementById("post-list");
+    if (postList) {
+        const errorMessage = document.createElement("li");
+        errorMessage.textContent = "Unable to load posts. Please try again later.";
+        postList.replaceChildren(errorMessage);
+    }
+});
